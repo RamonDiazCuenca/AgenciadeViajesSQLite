@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Agencia de Viajes</string>
+
+    <!--Botones-->
+    <string name="btnEntrar">Entrar</string>
+    <string name="btnAceptar">Aceptar</string>
+    <string name="btnInicio">Inicio</string>
+    <string name="btnReserva">Reservar</string>
+    <string name="btnVerReserva">Ver Reserva</string>
+
+    <!-- Campos TextView and EditText-->
+    <string name="titulo">Viajes Tetuán</string>
+    <string name="nombre">Nombre</string>
+    <string name="correo">Correo</string>
+    <string name="pass">Contraseña</string>
+    <string name="passconfirm">Confirmar contraseña</string>
+    <string name="etlugar">Lugar de Viaje</string>
+    <string name="etcantpersonas">Cantidad de Personas</string>
+
+    <!-- Label-->
+    <string name="labelInicio">Inicio</string>
+    <string name="labelFormulario">Formulario</string>
+    <string name="labelResultado">Resultado</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="lugar">Lugar</string>
+    <string name="cantidad">Personas</string>
+    <string name="id">Id</string>
+
+</resources>
