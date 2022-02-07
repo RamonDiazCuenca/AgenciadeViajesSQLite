@@ -41,19 +41,58 @@ public class FormularioFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated( View view,  Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        conn = new BBDD_Helper(getActivity().getApplicationContext(), "bd_viajes.db",null,1);
+        conn = new BBDD_Helper(getActivity().getApplicationContext(), "bd_viajes.db", null, 1);
 
-        binding.btnreserva.setOnClickListener(view1 -> {reservar();});
+        binding.btnreserva.setOnClickListener(view1 -> {
+            reservar();
+        });
 
-        binding.btnverreserva.setOnClickListener(view2 -> {verReserva();});
+        binding.btnverreserva.setOnClickListener(view2 -> {
+            verReserva();
+        });
+    }
+
+    private void verReserva() {
+
+        conn = new BBDD_Helper(getActivity().getApplicationContext(), "bd_viajes.db", null, 1);
+
+        String name = binding.etnombre.getText().toString();
+
+        if(!name.isEmpty()){ //sí el campo nombre no esta vacio
+
+            try {
+                String[] parametros = {name};//buscamos por este parámetro
+
+                SQLiteDatabase db = conn.getReadableDatabase();
+
+                Cursor cursor = db.rawQuery("SELECT * FROM viajes WHERE nombre=? ", parametros);
+
+                if(cursor.moveToFirst()) {//sí mi consulta contiene valores
+
+                    Bundle bundle = new Bundle();
+
+                    bundle.putInt("_id", cursor.getInt(0));
+                    bundle.putString("nombre", cursor.getString(1));
+                    bundle.putString("correo", cursor.getString(2));
+                    bundle.putString("contraseña", cursor.getString(3));
+                    bundle.putString("lugar", cursor.getString(4));
+                    bundle.putString("cantidad", cursor.getString(5));
+
+
+                    Navigation.findNavController(getView()).navigate(R.id.resultadoFragment, bundle);
+
+                    db.close();
+
+                }else{Toast.makeText(getActivity().getApplicationContext(), "Este cliente no tiene ninguna reserva", Toast.LENGTH_LONG).show();}
+
+            } catch(Exception e){Toast.makeText(getActivity().getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();}
+        }else{Toast.makeText(getActivity().getApplicationContext(), "Debes introducir tu nombre", Toast.LENGTH_LONG).show();}
     }
 
     private void reservar() {
-
-        SQLiteDatabase db = conn.getWritableDatabase();
 
         String nombre = binding.etnombre.getText().toString();
         String correo = binding.etcorreo.getText().toString();
@@ -61,57 +100,41 @@ public class FormularioFragment extends Fragment {
         String lugar = binding.etlugar.getText().toString();
         String personas = binding.etcantidad.getText().toString();
 
-        if(!nombre.isEmpty() && !correo.isEmpty()){
+        if(!nombre.isEmpty()){//sí el campo nombre no esta vacio, primero me buscas este cliente a ver si esta en la bd
 
-            ContentValues values = new ContentValues();
+            SQLiteDatabase db = conn.getWritableDatabase();
+            String[] parametros = {nombre};// buscamos por este parámetro
 
-            values.put("nombre",nombre);
-            values.put("correo", correo);
-            values.put("contraseña", contraseña);
-            values.put("lugar", lugar);
-            values.put("cantidad", personas);
+            try {
+                Cursor cursor = db.rawQuery("SELECT * FROM viajes WHERE nombre=? ", parametros);
 
-            db.insert("viajes",null,values);
-            db.close();
+                if(cursor.moveToFirst()){//sí mi consulta contiene valores
 
-            Toast.makeText(getContext(),"Registro exitoso", Toast.LENGTH_SHORT).show();
-            limpiar();
+                    Toast.makeText(getActivity().getApplicationContext(), "El cliente ya existe", Toast.LENGTH_SHORT).show();
 
-        }else{Toast.makeText(getContext(), "Rellene los campos nombre y correo", Toast.LENGTH_SHORT).show();}
-    }
+                    cursor.close();
+                    limpiar();
 
-    private void verReserva() {
+                }else{//sino me registras ese cliente
 
-        conn = new BBDD_Helper(getActivity().getApplicationContext(), "bd_viajes.db", null, 1);
+                    ContentValues values = new ContentValues();
 
-        SQLiteDatabase db = conn.getReadableDatabase();
+                    values.put("nombre", nombre);
+                    values.put("correo", correo);
+                    values.put("contraseña", contraseña);
+                    values.put("lugar", lugar);
+                    values.put("cantidad", personas);
 
-        String name = binding.etnombre.getText().toString();
+                    db.insert("viajes", null, values);
+                    db.close();
 
-        if (!name.isEmpty()){
+                    Toast.makeText(getContext(), "Registro exitoso", Toast.LENGTH_SHORT).show();
+                    limpiar();
+                }
 
-            Cursor cursor = db.rawQuery("SELECT * FROM viajes WHERE nombre='" + name + "'", null);
+            }catch (Exception e) {Toast.makeText(getActivity().getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();}
 
-            if(cursor != null && cursor.getCount() > 0){
-
-                cursor.moveToFirst();
-
-                do {
-                    binding.tvdatos.setText
-                            ("Id:" + cursor.getInt(0) + "\nNombre:" + cursor.getString(1) +
-                                    "\nCorreo:" + cursor.getString(2) +
-                                    "\nContraseña:" + cursor.getString(3) +
-                                    "\nLugar:" + cursor.getString(4) +
-                                    "\nPersonas:" + cursor.getString(5));
-
-                }while (cursor.moveToNext());
-
-            }else {Toast.makeText(getActivity().getApplicationContext(), "El cliente: " + name + " no existe", Toast.LENGTH_SHORT).show();}
-                //Navigation.findNavController(view2).navigate(R.id.resultadoFragment,bundle);*/
-
-                db.close();
-
-            }else{Toast.makeText(getActivity().getApplicationContext(), "Debes introducir tu nombre", Toast.LENGTH_SHORT).show();}
+        }else{Toast.makeText(getContext(), "Rellene el nombre", Toast.LENGTH_SHORT).show();}
     }
 
     private void limpiar() {

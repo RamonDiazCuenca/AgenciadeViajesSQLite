@@ -33,12 +33,12 @@ public class ResultadoFragment extends Fragment {
     public void onViewCreated( View view,  Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        int id_recibido = getArguments().getInt("id");
+        int id_recibido = getArguments().getInt("_id");
         String nombre_recibido = getArguments().getString("nombre");
         String correo_recibido = getArguments().getString("correo");
         String pass_recibido = getArguments().getString("contraseña");
         String lugar_recibido = getArguments().getString("lugar");
-        String personas_recibidas = getArguments().getString("personas");
+        String personas_recibidas = getArguments().getString("cantidad");
 
         binding.tvid.setText("Id: " + id_recibido);
         binding.tvnombreresult.setText("Nombre: " + nombre_recibido);
